@@ -1,40 +1,35 @@
-// This is a "stub" file.  It's a little start on your solution.
-// It's not a complete solution though; you have to write some code.
-
-// Package triangle should have a package comment that summarizes what it's about.
-// https://golang.org/doc/effective_go.html#commentary
+// Package triangle contains methods to work with triangle shape
 package triangle
 
 import (
 	"math"
 )
 
-// Notice KindFromSides() returns this type. Pick a suitable data type.
+// Kind holds the type of triangle
 type Kind string
 
 const (
-	// Pick values for the following identifiers used by the test program.
-	NaT Kind = "NaT" // not a triangle
-	Equ Kind = "Equ" // equilateral
-	Iso Kind = "Iso" // isosceles
-	Sca Kind = "Sca" // scalene
+	// NaT defines not a triangle
+	NaT Kind = "NaT"
+	// Equ defines equilateral triangle
+	Equ Kind = "Equ"
+	// Iso defines isosceles triangle
+	Iso Kind = "Iso"
+	// Sca defines scalene triangle
+	Sca Kind = "Sca"
 )
 
-// KindFromSides should have a comment documenting it.
+// KindFromSides returns the kind of triangle based on triangle sides measurements
 func KindFromSides(a, b, c float64) Kind {
 
 	var k Kind
 
-	anyIsNegative := func(a, b, c float64) bool {
+	isNegative := func(a, b, c float64) bool {
 		return a < 0 || b < 0 || c < 0
 	}
 
 	isTriangle := func(a, b, c float64) bool {
-		if a+b < c || a+c < b || c+b < a {
-			return false
-		}
-
-		return true
+		return a+b >= c && a+c >= b && c+b >= a
 	}
 
 	allSidesZero := func(a, b, c float64) bool {
@@ -45,14 +40,26 @@ func KindFromSides(a, b, c float64) Kind {
 		return !math.IsNaN(a) && !math.IsNaN(b) && !math.IsNaN(c) && !math.IsInf(a, 0) && !math.IsInf(b, 0) && !math.IsInf(c, 0)
 	}
 
+	allSidesEqual := func(a, b, c float64) bool {
+		return a == b && a == c
+	}
+
+	twoSidesEqual := func(a, b, c float64) bool {
+		return (a == b || a == c || b == c) && (a != b || a != c || b != c)
+	}
+
+	allSidesDifferent := func(a, b, c float64) bool {
+		return a != b && b != c && c != a
+	}
+
 	switch {
-	case a == 0 && b == 0 && c == 0 || anyIsNegative(a, b, c) || !isTriangle(a, b, c) || allSidesZero(a, b, c) || !allSidesAreNumbers(a, b, c):
+	case allSidesZero(a, b, c) || isNegative(a, b, c) || !isTriangle(a, b, c) || !allSidesAreNumbers(a, b, c):
 		k = NaT
-	case a == b && a == c:
+	case allSidesEqual(a, b, c):
 		k = Equ
-	case (a == b || a == c || b == c) && (a != b || a != c || b != c):
+	case twoSidesEqual(a, b, c):
 		k = Iso
-	case a != b && b != c && c != a:
+	case allSidesDifferent(a, b, c):
 		k = Sca
 	}
 
