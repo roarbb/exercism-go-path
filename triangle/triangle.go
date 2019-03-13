@@ -6,27 +6,22 @@ import (
 )
 
 // Kind holds the type of triangle
-type Kind string
+type Kind int
 
 const (
 	// NaT defines not a triangle
-	NaT Kind = "NaT"
+	NaT Kind = iota
 	// Equ defines equilateral triangle
-	Equ Kind = "Equ"
+	Equ
 	// Iso defines isosceles triangle
-	Iso Kind = "Iso"
+	Iso
 	// Sca defines scalene triangle
-	Sca Kind = "Sca"
+	Sca
 )
 
 // KindFromSides returns the kind of triangle based on triangle sides measurements
 func KindFromSides(a, b, c float64) Kind {
-
 	var k Kind
-
-	isNegative := func(a, b, c float64) bool {
-		return a < 0 || b < 0 || c < 0
-	}
 
 	isTriangle := func(a, b, c float64) bool {
 		return a+b >= c && a+c >= b && c+b >= a
@@ -53,7 +48,7 @@ func KindFromSides(a, b, c float64) Kind {
 	}
 
 	switch {
-	case allSidesZero(a, b, c) || isNegative(a, b, c) || !isTriangle(a, b, c) || !allSidesAreNumbers(a, b, c):
+	case allSidesZero(a, b, c) || !isTriangle(a, b, c) || !allSidesAreNumbers(a, b, c):
 		k = NaT
 	case allSidesEqual(a, b, c):
 		k = Equ
